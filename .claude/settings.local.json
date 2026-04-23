@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PGPASSWORD=\"Brampton06!Postgres\" \"/c/Program Files/PostgreSQL/17/bin/psql\" -U postgres -c \"CREATE DATABASE nomadis_db;\")"
+    ]
+  }
+}
