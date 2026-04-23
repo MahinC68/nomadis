@@ -1,7 +1,23 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Any
+from typing import Optional, Any, List
 from datetime import datetime
 
+
+# ── Shared preference mixin ───────────────────────────────────────────────────
+
+class PreferencesMixin(BaseModel):
+    destination: str
+    trip_length_days: int = Field(ge=1, le=30)
+    adventure: float = Field(ge=0.0, le=1.0)
+    culture: float = Field(ge=0.0, le=1.0)
+    relaxation: float = Field(ge=0.0, le=1.0)
+    nightlife: float = Field(ge=0.0, le=1.0)
+    nature: float = Field(ge=0.0, le=1.0)
+    food: float = Field(ge=0.0, le=1.0)
+    budget_range: str = Field(pattern="^(budget|mid|luxury)$")
+
+
+# ── POI ───────────────────────────────────────────────────────────────────────
 
 class POIResponse(BaseModel):
     id: int
@@ -21,16 +37,32 @@ class POIResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class TripCreate(BaseModel):
+# ── Recommend ─────────────────────────────────────────────────────────────────
+
+class RecommendRequest(PreferencesMixin):
+    pass
+
+
+class RankedPOIResponse(POIResponse):
+    match_score: float
+
+
+class RecommendResponse(BaseModel):
     destination: str
-    trip_length_days: int = Field(ge=1, le=30)
-    adventure: float = Field(ge=0.0, le=1.0)
-    culture: float = Field(ge=0.0, le=1.0)
-    relaxation: float = Field(ge=0.0, le=1.0)
-    nightlife: float = Field(ge=0.0, le=1.0)
-    nature: float = Field(ge=0.0, le=1.0)
-    food: float = Field(ge=0.0, le=1.0)
-    budget_range: str = Field(pattern="^(budget|mid|luxury)$")
+    total_pois: int
+    ranked_pois: List[RankedPOIResponse]
+
+
+# ── Generate Itinerary ────────────────────────────────────────────────────────
+
+class GenerateItineraryRequest(PreferencesMixin):
+    pass
+
+
+# ── Trip ──────────────────────────────────────────────────────────────────────
+
+class TripCreate(PreferencesMixin):
+    pass
 
 
 class TripResponse(BaseModel):

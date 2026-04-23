@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 import app.models  # noqa: F401 — ensures models are registered before create_all
-from app.routes import pois, trips
+from app.routes import pois, trips, recommend, itinerary
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,6 +18,8 @@ app.add_middleware(
 
 app.include_router(pois.router)
 app.include_router(trips.router)
+app.include_router(recommend.router)
+app.include_router(itinerary.router)
 
 
 @app.get("/")
