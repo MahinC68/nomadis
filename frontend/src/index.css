@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    margin: 0;
+  }
+
+  #root {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+input[type='range'] {
+  accent-color: #FF6B6B;
+}
