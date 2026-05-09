@@ -3,38 +3,106 @@ import { Link, useLocation } from 'react-router-dom'
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/trips', label: 'My Trips' },
+  { to: '/plan', label: 'Plan a Trip', accent: true },
 ]
 
 export default function Navbar() {
   const { pathname } = useLocation()
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl text-gray-900 hover:text-coral transition-colors">
-          <span className="text-2xl">🌍</span>
+    <nav
+      style={{
+        position: 'fixed',
+        top: 16,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        display: 'flex',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          background: 'rgba(12, 10, 30, 0.75)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 999,
+          boxShadow: `
+            0 1px 0 rgba(255,255,255,0.14) inset,
+            0 -1px 0 rgba(0,0,0,0.5) inset,
+            0 10px 40px rgba(0,0,0,0.5),
+            0 2px 10px rgba(0,0,0,0.35),
+            0 0 0 1px rgba(255,255,255,0.09)
+          `,
+          padding: 4,
+          gap: 2,
+          pointerEvents: 'auto',
+        }}
+      >
+        {/* Logo */}
+        <Link
+          to="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '8px 16px 8px 12px',
+            fontWeight: 800,
+            fontSize: 15,
+            color: '#F5E6C8',
+            textDecoration: 'none',
+            borderRight: '1px solid rgba(255,255,255,0.09)',
+            marginRight: 4,
+            letterSpacing: '-0.01em',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ fontSize: 18 }}>🌍</span>
           <span>Nomadis</span>
         </Link>
 
-        <div className="flex items-center gap-6">
-          {NAV_LINKS.map(({ to, label }) => (
+        {NAV_LINKS.map(({ to, label, accent }) => {
+          const active = pathname === to
+          return (
             <Link
               key={to}
               to={to}
-              className={`text-sm font-medium transition-colors ${
-                pathname === to ? 'text-coral' : 'text-gray-500 hover:text-gray-900'
-              }`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '8px 18px',
+                fontSize: 13.5,
+                fontWeight: active ? 700 : 500,
+                textDecoration: 'none',
+                borderRadius: 999,
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap',
+                ...(accent
+                  ? {
+                      background: 'linear-gradient(175deg, #ff7e7e 0%, #e55050 100%)',
+                      color: '#fff',
+                      boxShadow:
+                        '0 1px 0 rgba(255,255,255,0.25) inset, 0 -1px 0 rgba(0,0,0,0.2) inset, 0 3px 12px rgba(255,100,100,0.45)',
+                    }
+                  : active
+                  ? {
+                      background: 'rgba(255,255,255,0.13)',
+                      color: '#fff',
+                      boxShadow: '0 1px 0 rgba(255,255,255,0.12) inset',
+                    }
+                  : {
+                      background: 'transparent',
+                      color: 'rgba(255,255,255,0.58)',
+                    }),
+              }}
             >
               {label}
             </Link>
-          ))}
-          <Link
-            to="/plan"
-            className="bg-coral text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-coral-dark transition-colors shadow-sm"
-          >
-            Plan a Trip
-          </Link>
-        </div>
+          )
+        })}
       </div>
     </nav>
   )
