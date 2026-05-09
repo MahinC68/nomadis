@@ -78,6 +78,50 @@ const STEPS = [
   },
 ]
 
+// x/y = % position, s = size px, o = opacity, tw = twinkle, spark = 4-point sparkle shape
+// Placed in corners + edges only — avoids text (left 45%, mid-y) and globe (right-center)
+const STARS = [
+  // top strip
+  { x:  3, y:  5, s: 2,   o: 0.50, tw: true  },
+  { x:  9, y:  3, s: 1.5, o: 0.35              },
+  { x: 16, y:  8, s: 2.5, o: 0.30, spark: true },
+  { x: 24, y:  4, s: 1.5, o: 0.45, tw: true   },
+  { x: 33, y:  7, s: 2,   o: 0.30              },
+  { x: 42, y:  3, s: 1.5, o: 0.40              },
+  { x: 51, y:  9, s: 2,   o: 0.35, tw: true   },
+  { x: 60, y:  5, s: 1.5, o: 0.45              },
+  { x: 69, y:  3, s: 2.5, o: 0.30, spark: true },
+  { x: 78, y:  8, s: 1.5, o: 0.40, tw: true   },
+  { x: 86, y:  4, s: 2,   o: 0.50              },
+  { x: 93, y:  7, s: 1.5, o: 0.35              },
+  { x: 98, y:  3, s: 2,   o: 0.45, tw: true   },
+  // bottom strip
+  { x:  6, y: 88, s: 2,   o: 0.40, tw: true   },
+  { x: 15, y: 93, s: 1.5, o: 0.30              },
+  { x: 25, y: 88, s: 2.5, o: 0.35, spark: true },
+  { x: 36, y: 92, s: 1.5, o: 0.40              },
+  { x: 47, y: 87, s: 2,   o: 0.30, tw: true   },
+  { x: 58, y: 93, s: 1.5, o: 0.45              },
+  { x: 68, y: 89, s: 2,   o: 0.35              },
+  { x: 76, y: 94, s: 2.5, o: 0.30, spark: true, tw: true },
+  { x: 85, y: 88, s: 1.5, o: 0.40              },
+  { x: 93, y: 92, s: 2,   o: 0.45, tw: true   },
+  { x: 98, y: 87, s: 1.5, o: 0.30              },
+  // far left edge (mid-y)
+  { x:  1, y: 22, s: 1.5, o: 0.40              },
+  { x:  3, y: 36, s: 2,   o: 0.35, tw: true   },
+  { x:  1, y: 50, s: 1.5, o: 0.30              },
+  { x:  4, y: 64, s: 2,   o: 0.40              },
+  { x:  2, y: 78, s: 1.5, o: 0.35, tw: true   },
+  // far right edge (mid-y, outside globe)
+  { x: 97, y: 20, s: 2,   o: 0.50, tw: true   },
+  { x: 99, y: 33, s: 1.5, o: 0.35              },
+  { x: 96, y: 46, s: 2,   o: 0.40              },
+  { x: 98, y: 60, s: 1.5, o: 0.30, tw: true   },
+  { x: 95, y: 74, s: 2,   o: 0.45              },
+  { x: 99, y: 82, s: 1.5, o: 0.35              },
+]
+
 export default function Landing() {
   const navigate = useNavigate()
 
@@ -96,6 +140,10 @@ export default function Landing() {
         @keyframes globePulse {
           0%, 100% { opacity: 1; }
           50%       { opacity: 0.93; }
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: var(--so); }
+          50%       { opacity: calc(var(--so) * 0.3); }
         }
         .btn-plan {
           display: inline-flex;
@@ -158,6 +206,56 @@ export default function Landing() {
             'radial-gradient(ellipse at 65% 50%, #18184a 0%, #0d0d2b 40%, #1c0c42 70%, #2e1060 100%)',
         }}
       >
+        {/* ── Stars ── */}
+        {STARS.map((s, i) =>
+          s.spark ? (
+            <svg
+              key={i}
+              aria-hidden="true"
+              width={s.s * 4}
+              height={s.s * 4}
+              viewBox="-5 -5 10 10"
+              style={{
+                position: 'absolute',
+                left: `${s.x}%`,
+                top: `${s.y}%`,
+                pointerEvents: 'none',
+                zIndex: 1,
+                '--so': s.o,
+                animation: s.tw
+                  ? `twinkle ${3.5 + (i % 4) * 0.7}s ease-in-out ${(i * 0.4) % 3}s infinite`
+                  : undefined,
+                opacity: s.o,
+              }}
+            >
+              <path
+                d="M0,-3.5 L0.5,-0.5 L3.5,0 L0.5,0.5 L0,3.5 L-0.5,0.5 L-3.5,0 L-0.5,-0.5 Z"
+                fill={`rgba(245,230,200,1)`}
+              />
+            </svg>
+          ) : (
+            <div
+              key={i}
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: `${s.x}%`,
+                top: `${s.y}%`,
+                width: s.s,
+                height: s.s,
+                borderRadius: '50%',
+                background: `rgba(245,230,200,${s.o})`,
+                pointerEvents: 'none',
+                zIndex: 1,
+                '--so': s.o,
+                animation: s.tw
+                  ? `twinkle ${3 + (i % 5) * 0.6}s ease-in-out ${(i * 0.35) % 2.5}s infinite`
+                  : undefined,
+              }}
+            />
+          )
+        )}
+
         <div
           style={{
             width: '100%',
