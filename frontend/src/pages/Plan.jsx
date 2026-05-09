@@ -1,10 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { recommend, generateItinerary } from '../api/nomadis'
-
-const CITIES = ['Paris', 'Tokyo', 'New York', 'Barcelona', 'Rome']
+import { recommend, generateItinerary, getCities } from '../api/nomadis'
 
 const LOADING_STEPS = [
   { icon: '🔍', label: 'Finding perfect matches...' },
@@ -41,23 +39,67 @@ function LoadingStep({ step, index, current }) {
 
 export default function Plan() {
   const navigate = useNavigate()
-  const [destination, setDestination] = useState('')
+
+  const [cities, setCities] = useState([])
+  const [citiesLoading, setCitiesLoading] = useState(true)
+  const [cityInput, setCityInput] = useState('')
+  const [showDropdown, setShowDropdown] = useState(false)
   const [days, setDays] = useState(3)
   const [loadingStep, setLoadingStep] = useState(-1)
   const [error, setError] = useState('')
 
+  const dropdownRef = useRef(null)
+
   const storedPrefs = JSON.parse(localStorage.getItem('nomadisPrefs') || 'null')
   const hasPrefs = storedPrefs !== null
-
   const isLoading = loadingStep >= 0
 
+  useEffect(() => {
+    getCities()
+      .then(setCities)
+      .catch(() => {})
+      .finally(() => setCitiesLoading(false))
+  }, [])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const filteredCities = cities.filter((c) =>
+    c.toLowerCase().includes(cityInput.toLowerCase())
+  )
+
+  const isValidCity = cities.some(
+    (c) => c.toLowerCase() === cityInput.toLowerCase()
+  )
+
+  const showNotAvailable =
+    cityInput.trim().length > 0 && !citiesLoading && filteredCities.length === 0
+
   const handleGenerate = async () => {
-    if (!destination.trim()) { setError('Please enter or select a destination city.'); return }
-    if (!hasPrefs) { setError('Please set your preferences first.'); return }
+    if (!cityInput.trim()) {
+      setError('Please select a destination.')
+      return
+    }
+    if (!isValidCity) {
+      setError('That destination isn\'t in our database. Select one from the list.')
+      return
+    }
+    if (!hasPrefs) {
+      setError('Please set your preferences first.')
+      return
+    }
     setError('')
 
     const payload = {
-      destination: destination.trim(),
+      destination: cityInput.trim(),
       trip_length_days: days,
       adventure: storedPrefs.adventure ?? 0.5,
       culture: storedPrefs.culture ?? 0.5,
@@ -111,32 +153,61 @@ export default function Plan() {
         )}
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 space-y-7">
-          {/* Destination input */}
+          {/* Destination combobox */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Destination City</label>
-            <input
-              type="text"
-              placeholder="e.g. Paris, Tokyo, New York…"
-              value={destination}
-              onChange={(e) => { setDestination(e.target.value); setError('') }}
-              disabled={isLoading}
-              className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-coral transition-colors disabled:opacity-50"
-            />
-            <div className="flex flex-wrap gap-2 mt-3">
-              {CITIES.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => { setDestination(c); setError('') }}
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Destination</label>
+            <div ref={dropdownRef} className="relative">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search destinations…"
+                  value={cityInput}
+                  onChange={(e) => {
+                    setCityInput(e.target.value)
+                    setShowDropdown(true)
+                    setError('')
+                  }}
+                  onFocus={() => setShowDropdown(true)}
                   disabled={isLoading}
-                  className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${
-                    destination === c
-                      ? 'bg-coral text-white border-coral'
-                      : 'border-gray-200 text-gray-500 hover:border-coral hover:text-coral'
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-coral transition-colors disabled:opacity-50"
+                />
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none select-none">
+                  ▾
+                </span>
+              </div>
+
+              {showDropdown && (
+                citiesLoading ? (
+                  <div className="absolute z-20 w-full bg-white border border-gray-200 rounded-2xl shadow-xl mt-1.5 px-4 py-3 text-sm text-gray-400">
+                    Loading destinations…
+                  </div>
+                ) : filteredCities.length > 0 ? (
+                  <ul className="absolute z-20 w-full bg-white border border-gray-200 rounded-2xl shadow-xl mt-1.5 max-h-60 overflow-y-auto">
+                    {filteredCities.map((city) => (
+                      <li
+                        key={city}
+                        onClick={() => {
+                          setCityInput(city)
+                          setShowDropdown(false)
+                          setError('')
+                        }}
+                        className={`px-4 py-2.5 cursor-pointer text-sm transition-colors first:rounded-t-2xl last:rounded-b-2xl ${
+                          cityInput === city
+                            ? 'bg-coral/10 text-coral font-semibold'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-coral'
+                        }`}
+                      >
+                        {city}
+                      </li>
+                    ))}
+                  </ul>
+                ) : showNotAvailable ? (
+                  <div className="absolute z-20 w-full bg-white border border-amber-200 rounded-2xl shadow-xl mt-1.5 px-4 py-3 text-sm text-amber-700 flex items-center gap-2">
+                    <span>⚠️</span>
+                    <span>That destination isn't available — try another city from the list.</span>
+                  </div>
+                ) : null
+              )}
             </div>
           </div>
 

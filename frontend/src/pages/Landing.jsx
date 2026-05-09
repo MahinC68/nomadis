@@ -2,27 +2,32 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
-function Blob({ color, style }) {
+/* Airplane silhouette — side profile, points right by default */
+function PlaneIcon({ size = 38, color = '#E8D5B0', glow }) {
   return (
-    <div
+    <svg
+      viewBox="0 0 40 16"
+      width={size}
+      height={size * 0.4}
+      fill={color}
+      style={glow ? { filter: `drop-shadow(0 0 5px ${color}99) drop-shadow(0 0 12px ${color}55)` } : undefined}
       aria-hidden="true"
-      style={{ position: 'absolute', borderRadius: '50%', background: color, pointerEvents: 'none', ...style }}
-    />
+    >
+      {/*
+        Nose at (38,8). Wings from ~x=4 to x=22.
+        Tail at x=0 with upper and lower fins.
+        Path traces: upper nose → upper wing → upper tail fin → lower tail fin → lower wing → back to nose
+      */}
+      <path d="M38 8 L22 3 L8 0 L4 0 L8 7 L0 6 L0 10 L8 9 L4 16 L8 16 L22 11 L38 8Z" />
+    </svg>
   )
 }
-
-const DESTINATIONS = [
-  { name: 'Paris',     emoji: '🗼', tag: 'Romance & Culture',   gradient: 'linear-gradient(135deg, #FF6B6B 0%, #ee0979 100%)' },
-  { name: 'Tokyo',     emoji: '⛩️', tag: 'Food & Tradition',    gradient: 'linear-gradient(135deg, #667eea 0%, #4ECDC4 100%)' },
-  { name: 'New York',  emoji: '🗽', tag: 'Energy & Nightlife',  gradient: 'linear-gradient(135deg, #2980B9 0%, #6DD5FA 100%)' },
-  { name: 'Barcelona', emoji: '🏖️', tag: 'Sun & Architecture', gradient: 'linear-gradient(135deg, #f7971e 0%, #FFD166 100%)' },
-]
 
 const FEATURES = [
   {
     icon: '🎯',
     title: 'Personalised recommendations',
-    desc: 'Rate six travel preferences and the app matches every activity in the city to your score — so you\'re not wading through things you don\'t care about.',
+    desc: "Rate six travel preferences and the app matches every activity in the city to your score — so you're not wading through things you don't care about.",
     bg: 'bg-gradient-to-br from-orange-50 to-red-50',
     border: 'border-orange-100',
   },
@@ -54,7 +59,7 @@ const STEPS = [
     num: 2,
     emoji: '🌆',
     title: 'Choose a destination',
-    desc: 'Pick from Paris, Tokyo, New York, Barcelona, or Rome.',
+    desc: 'Search any destination from our global database of cities.',
     color: 'bg-ocean',
   },
   {
@@ -73,52 +78,228 @@ const STEPS = [
   },
 ]
 
-const DOT_PATTERN = {
-  backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.18) 1.5px, transparent 1.5px)',
-  backgroundSize: '22px 22px',
-}
-
 export default function Landing() {
   const navigate = useNavigate()
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Keyframe animations — injected once at component root */}
+      <style>{`
+        @keyframes orbitCW {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes orbitCCW {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(-360deg); }
+        }
+        @keyframes globePulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.93; }
+        }
+      `}</style>
+
       <Navbar />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section
-        className="relative flex flex-col items-center justify-center text-center overflow-hidden"
-        style={{ background: '#0d0f1c', minHeight: '88vh' }}
+        className="relative overflow-hidden"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background:
+            'radial-gradient(ellipse at 55% 42%, #18184a 0%, #0d0d2b 40%, #1c0c42 70%, #2e1060 100%)',
+        }}
       >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <Blob color="#FF6B6B" style={{ top: '-15%', left: '-10%', width: 620, height: 620, filter: 'blur(110px)', opacity: 0.45 }} />
-          <Blob color="#4ECDC4" style={{ top: '-12%', right: '-8%', width: 520, height: 520, filter: 'blur(100px)', opacity: 0.4 }} />
-          <Blob color="#FF8C42" style={{ top: '38%', right: '-6%', width: 380, height: 380, filter: 'blur(90px)', opacity: 0.38 }} />
-          <Blob color="#FFD166" style={{ bottom: '-12%', left: '28%', width: 460, height: 460, filter: 'blur(100px)', opacity: 0.3 }} />
-          <Blob color="#4ECDC4" style={{ bottom: '4%', left: '-4%', width: 280, height: 280, filter: 'blur(75px)', opacity: 0.28 }} />
-          <Blob color="#FF6B6B" style={{ top: '45%', left: '42%', width: 200, height: 200, filter: 'blur(60px)', opacity: 0.2 }} />
+        {/* ── 3D Globe — absolutely centered, behind the text ── */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 560,
+            height: 560,
+            pointerEvents: 'none',
+          }}
+        >
+          {/* Sphere */}
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              /*
+               * Light source: top-left (~28% x, 22% y).
+               * Elliptical overlays simulate continent-shaped landmasses
+               * in subtly brighter teal scattered across the surface.
+               * The base radial gradient runs from bright highlight at the
+               * light source through mid-navy to near-black at the shadow.
+               */
+              background: `
+                radial-gradient(ellipse at 22% 26%, rgba(38,158,172,0.6)  0%, transparent 26%),
+                radial-gradient(ellipse at 68% 18%, rgba(14,74,94,0.65)   0%, transparent 22%),
+                radial-gradient(ellipse at 55% 65%, rgba(16,84,106,0.5)   0%, transparent 24%),
+                radial-gradient(ellipse at 10% 76%, rgba(8,48,68,0.62)    0%, transparent 20%),
+                radial-gradient(ellipse at 82% 72%, rgba(12,64,84,0.5)    0%, transparent 22%),
+                radial-gradient(ellipse at 36% 44%, rgba(6,42,62,0.36)    0%, transparent 30%),
+                radial-gradient(circle   at 28% 22%, #1e8898 0%, #0b3c4e 20%, #061d2c 50%, #030d18 80%, #010608 100%)
+              `,
+              boxShadow: `
+                inset -62px -34px 150px rgba(0,0,0,0.98),
+                inset  22px  14px  65px rgba(76,210,210,0.042),
+                inset   4px   4px  20px rgba(255,255,255,0.015),
+                0   0 110px rgba(14,116,144,0.6),
+                0   0 220px rgba(14,116,144,0.25),
+                0   0 360px rgba(14,116,144,0.09),
+                0  50px 120px rgba(0,0,0,0.8)
+              `,
+              animation: 'globePulse 8s ease-in-out infinite',
+            }}
+          />
+
+          {/* Atmospheric limb — soft outer halo */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: -16,
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, transparent 58%, rgba(14,116,144,0.14) 78%, rgba(14,116,144,0.04) 100%)',
+            }}
+          />
+
+          {/* ── Orbit ring A — matches CW plane radius ── */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: 700,
+              height: 700,
+              marginTop: -350,
+              marginLeft: -350,
+              border: '1px solid rgba(100,220,210,0.1)',
+              borderRadius: '50%',
+            }}
+          />
+
+          {/* ── Orbit ring B — matches CCW plane radius ── */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: 624,
+              height: 624,
+              marginTop: -312,
+              marginLeft: -312,
+              border: '1px dashed rgba(230,160,200,0.08)',
+              borderRadius: '50%',
+            }}
+          />
+
+          {/* ── Plane 1: clockwise, outer orbit ── */}
+          {/*
+            The orbit wrapper (0×0 div) is centered on the globe.
+            animation: rotate(0→360deg) sweeps the wrapper CW.
+            The plane inside is offset by translateX(r) — putting it at
+            the orbit radius — then rotate(90deg) makes the nose face the
+            tangent direction for clockwise travel at the 3-o'clock start.
+          */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: 0,
+              height: 0,
+              animation: 'orbitCW 24s linear infinite',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                transform: 'translateX(342px) translateY(-7px) rotate(90deg)',
+              }}
+            >
+              <PlaneIcon size={42} color="#E8D5B0" glow />
+            </div>
+          </div>
+
+          {/* ── Plane 2: counterclockwise, inner orbit, phase-shifted ── */}
+          {/*
+            rotate(-90deg) faces the nose toward the correct tangent
+            for CCW travel at the 3-o'clock starting position.
+            animation-delay: -7s starts the plane mid-orbit so the two
+            planes are never at the same screen position simultaneously.
+          */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: 0,
+              height: 0,
+              animation: 'orbitCCW 16s linear -7s infinite',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                transform: 'translateX(304px) translateY(-6px) rotate(-90deg)',
+              }}
+            >
+              <PlaneIcon size={36} color="#DDB8C8" glow />
+            </div>
+          </div>
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 py-20">
-          <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/80 border border-white/20 px-5 py-2 rounded-full text-sm mb-8 tracking-wide">
-            Paris · Tokyo · New York · Barcelona · Rome
+        {/* ── Text content — z-index above globe, below planes ── */}
+        <div
+          className="relative max-w-5xl mx-auto px-6 text-center"
+          style={{ zIndex: 10, paddingTop: '6rem', paddingBottom: '6rem' }}
+        >
+          <span
+            className="inline-flex items-center gap-2 backdrop-blur-sm border px-5 py-2 rounded-full text-sm mb-8 tracking-wide"
+            style={{
+              background: 'rgba(220,145,175,0.09)',
+              borderColor: 'rgba(230,155,185,0.22)',
+              color: 'rgba(242,182,205,0.8)',
+            }}
+          >
+            Destinations worldwide
           </span>
 
-          <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-white leading-none mb-6 tracking-tight">
+          <h1
+            className="text-6xl sm:text-7xl md:text-8xl font-black leading-none mb-6 tracking-tight"
+            style={{ color: '#F5E6C8' }}
+          >
             Plan your trip
             <br />
             around how you
             <br />
             <span
               className="text-transparent bg-clip-text"
-              style={{ backgroundImage: 'linear-gradient(135deg, #FF6B6B 0%, #FFD166 60%, #ffa07a 100%)' }}
+              style={{
+                backgroundImage:
+                  'linear-gradient(135deg, #FF6B6B 0%, #FFD166 60%, #ffa07a 100%)',
+              }}
             >
               actually travel
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-white/70 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-            Tell us your travel style, pick a city, and get a personalised day-by-day itinerary built around what you actually enjoy.
+          <p
+            className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed font-light"
+            style={{ color: 'rgba(232,218,192,0.64)' }}
+          >
+            Tell us your travel style, pick a city, and get a personalised day-by-day
+            itinerary built around what you actually enjoy.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -137,51 +318,18 @@ export default function Landing() {
           </div>
         </div>
 
-        <div className="absolute bottom-6 flex flex-col items-center text-white/40 gap-1 animate-bounce">
+        {/* Scroll indicator */}
+        <div
+          className="absolute bottom-6 flex flex-col items-center gap-1 animate-bounce"
+          style={{ color: 'rgba(245,230,200,0.3)', zIndex: 10 }}
+        >
           <span className="text-xs tracking-widest uppercase font-medium">Scroll</span>
           <span className="text-base">↓</span>
         </div>
       </section>
 
-      {/* ── DESTINATIONS ──────────────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
-              Where do you want to go?
-            </h2>
-            <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              Five cities are supported right now. Pick one to see what your itinerary could look like.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {DESTINATIONS.map((d) => (
-              <button
-                key={d.name}
-                onClick={() => navigate('/plan')}
-                className="relative rounded-3xl overflow-hidden group focus:outline-none focus:ring-4 focus:ring-coral/30 hover:-translate-y-1 transition-all duration-300"
-                style={{ aspectRatio: '3/4' }}
-              >
-                <div className="absolute inset-0" style={{ background: d.gradient }} />
-                <div className="absolute inset-0" style={DOT_PATTERN} />
-                <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-5 gap-2">
-                  <span className="text-5xl filter drop-shadow-lg">{d.emoji}</span>
-                  <p className="text-white font-black text-2xl leading-tight drop-shadow-md">{d.name}</p>
-                  <p className="text-white/75 text-sm font-medium">{d.tag}</p>
-                </div>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold px-4 py-1.5 rounded-full opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 whitespace-nowrap">
-                  Explore →
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── WHAT NOMADIS DOES ─────────────────────────────────────────────── */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20" style={{ background: '#FFFDF0' }}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
@@ -208,7 +356,7 @@ export default function Landing() {
       </section>
 
       {/* ── HOW IT WORKS ──────────────────────────────────────────────────── */}
-      <section className="py-20 bg-white overflow-hidden">
+      <section className="py-20 overflow-hidden" style={{ background: '#FFFDF0' }}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
@@ -245,7 +393,7 @@ export default function Landing() {
         </div>
       </section>
 
-<Footer />
+      <Footer />
     </div>
   )
 }

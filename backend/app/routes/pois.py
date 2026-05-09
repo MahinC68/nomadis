@@ -9,6 +9,12 @@ from app.schemas import POIResponse
 router = APIRouter(prefix="/pois", tags=["POIs"])
 
 
+@router.get("/cities/", response_model=List[str])
+def list_cities(db: Session = Depends(get_db)):
+    rows = db.query(POI.city).distinct().order_by(POI.city).all()
+    return [r[0] for r in rows]
+
+
 @router.get("/", response_model=List[POIResponse])
 def list_pois(
     city: Optional[str] = Query(None, description="Filter by city name"),

@@ -13,3 +13,4 @@ const req = (method, path, body) =>
 export const recommend = (payload) => req('POST', '/recommend/', payload)
 export const generateItinerary = (payload) => req('POST', '/generate-itinerary/', payload)
 export const getTrips = () => req('GET', '/trips/')
+export const getCities = () => req('GET', '/pois/cities/')
