@@ -97,6 +97,51 @@ export default function Landing() {
           0%, 100% { opacity: 1; }
           50%       { opacity: 0.93; }
         }
+        .btn-plan {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          background: linear-gradient(175deg, #ff7e7e 0%, #e55050 100%);
+          color: #fff;
+          padding: 16px 40px;
+          border-radius: 1rem;
+          font-size: 18px;
+          font-weight: 700;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 -1px 0 rgba(0,0,0,0.2) inset, 0 3px 12px rgba(255,100,100,0.45);
+          transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+        .btn-plan:hover {
+          transform: translateY(-2px);
+          opacity: 0.9;
+          box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 -1px 0 rgba(0,0,0,0.2) inset, 0 8px 24px rgba(255,100,100,0.55);
+        }
+        .btn-plan:hover .btn-arrow {
+          transform: translateX(5px);
+        }
+        .btn-arrow {
+          display: inline-block;
+          transition: transform 0.2s ease;
+        }
+        .btn-secondary {
+          display: inline-flex;
+          align-items: center;
+          background: rgba(255,255,255,0.1);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          color: #fff;
+          padding: 16px 40px;
+          border-radius: 1rem;
+          font-size: 18px;
+          font-weight: 600;
+          border: 1px solid rgba(255,255,255,0.25);
+          cursor: pointer;
+          transition: background 0.2s ease;
+        }
+        .btn-secondary:hover {
+          background: rgba(255,255,255,0.2);
+        }
       `}</style>
 
       <Navbar />
@@ -108,219 +153,182 @@ export default function Landing() {
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
           background:
-            'radial-gradient(ellipse at 55% 42%, #18184a 0%, #0d0d2b 40%, #1c0c42 70%, #2e1060 100%)',
+            'radial-gradient(ellipse at 65% 50%, #18184a 0%, #0d0d2b 40%, #1c0c42 70%, #2e1060 100%)',
         }}
       >
-        {/* ── 3D Globe — absolutely centered, behind the text ── */}
         <div
-          aria-hidden="true"
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 560,
-            height: 560,
-            pointerEvents: 'none',
+            width: '100%',
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '6rem 3rem',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            alignItems: 'center',
+            gap: '6rem',
           }}
         >
-          {/* Sphere */}
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              /*
-               * Light source: top-left (~28% x, 22% y).
-               * Elliptical overlays simulate continent-shaped landmasses
-               * in subtly brighter teal scattered across the surface.
-               * The base radial gradient runs from bright highlight at the
-               * light source through mid-navy to near-black at the shadow.
-               */
-              background: `
-                radial-gradient(ellipse at 22% 26%, rgba(38,158,172,0.6)  0%, transparent 26%),
-                radial-gradient(ellipse at 68% 18%, rgba(14,74,94,0.65)   0%, transparent 22%),
-                radial-gradient(ellipse at 55% 65%, rgba(16,84,106,0.5)   0%, transparent 24%),
-                radial-gradient(ellipse at 10% 76%, rgba(8,48,68,0.62)    0%, transparent 20%),
-                radial-gradient(ellipse at 82% 72%, rgba(12,64,84,0.5)    0%, transparent 22%),
-                radial-gradient(ellipse at 36% 44%, rgba(6,42,62,0.36)    0%, transparent 30%),
-                radial-gradient(circle   at 28% 22%, #1e8898 0%, #0b3c4e 20%, #061d2c 50%, #030d18 80%, #010608 100%)
-              `,
-              boxShadow: `
-                inset -62px -34px 150px rgba(0,0,0,0.98),
-                inset  22px  14px  65px rgba(76,210,210,0.042),
-                inset   4px   4px  20px rgba(255,255,255,0.015),
-                0   0 110px rgba(14,116,144,0.6),
-                0   0 220px rgba(14,116,144,0.25),
-                0   0 360px rgba(14,116,144,0.09),
-                0  50px 120px rgba(0,0,0,0.8)
-              `,
-              animation: 'globePulse 8s ease-in-out infinite',
-            }}
-          />
-
-          {/* Atmospheric limb — soft outer halo */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: -16,
-              borderRadius: '50%',
-              background:
-                'radial-gradient(circle, transparent 58%, rgba(14,116,144,0.14) 78%, rgba(14,116,144,0.04) 100%)',
-            }}
-          />
-
-          {/* ── Orbit ring A — matches CW plane radius ── */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: 700,
-              height: 700,
-              marginTop: -350,
-              marginLeft: -350,
-              border: '1px solid rgba(100,220,210,0.1)',
-              borderRadius: '50%',
-            }}
-          />
-
-          {/* ── Orbit ring B — matches CCW plane radius ── */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: 624,
-              height: 624,
-              marginTop: -312,
-              marginLeft: -312,
-              border: '1px dashed rgba(230,160,200,0.08)',
-              borderRadius: '50%',
-            }}
-          />
-
-          {/* ── Plane 1: clockwise, outer orbit ── */}
-          {/*
-            The orbit wrapper (0×0 div) is centered on the globe.
-            animation: rotate(0→360deg) sweeps the wrapper CW.
-            The plane inside is offset by translateX(r) — putting it at
-            the orbit radius — then rotate(90deg) makes the nose face the
-            tangent direction for clockwise travel at the 3-o'clock start.
-          */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: 0,
-              height: 0,
-              animation: 'orbitCW 24s linear infinite',
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                transform: 'translateX(342px) translateY(-7px) rotate(90deg)',
-              }}
+          {/* ── Left column: text + buttons ── */}
+          <div>
+            <h1
+              className="text-5xl md:text-6xl font-black leading-tight mb-6 tracking-tight"
+              style={{ color: '#F5E6C8' }}
             >
-              <PlaneIcon size={42} color="#E8D5B0" glow />
+              Plan your trip
+              <br />
+              around how you{' '}
+              <span
+                className="text-transparent bg-clip-text"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(135deg, #FF6B6B 0%, #FFD166 60%, #ffa07a 100%)',
+                }}
+              >
+                actually travel
+              </span>
+            </h1>
+
+            <p
+              className="text-lg md:text-xl mb-10 leading-relaxed font-light"
+              style={{ color: 'rgba(232,218,192,0.64)', maxWidth: 460 }}
+            >
+              Tell us your travel style, pick a city, and get a personalised day-by-day
+              itinerary built around what you actually enjoy.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button onClick={() => navigate('/plan')} className="btn-plan">
+                Plan a Trip <span className="btn-arrow">→</span>
+              </button>
+              <button onClick={() => navigate('/onboarding')} className="btn-secondary">
+                Set My Preferences
+              </button>
             </div>
           </div>
 
-          {/* ── Plane 2: counterclockwise, inner orbit, phase-shifted ── */}
-          {/*
-            rotate(-90deg) faces the nose toward the correct tangent
-            for CCW travel at the 3-o'clock starting position.
-            animation-delay: -7s starts the plane mid-orbit so the two
-            planes are never at the same screen position simultaneously.
-          */}
+          {/* ── Right column: 3D globe + orbiting planes ── */}
           <div
+            aria-hidden="true"
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              width: 0,
-              height: 0,
-              animation: 'orbitCCW 16s linear -7s infinite',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
             }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                transform: 'translateX(304px) translateY(-6px) rotate(-90deg)',
-              }}
-            >
-              <PlaneIcon size={36} color="#DDB8C8" glow />
+            {/* Globe anchor — orbit rings/planes extend outside this box */}
+            <div style={{ position: 'relative', width: 560, height: 560, flexShrink: 0 }}>
+
+              {/* Sphere */}
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  background: `
+                    radial-gradient(ellipse at 22% 26%, rgba(38,158,172,0.6)  0%, transparent 26%),
+                    radial-gradient(ellipse at 68% 18%, rgba(14,74,94,0.65)   0%, transparent 22%),
+                    radial-gradient(ellipse at 55% 65%, rgba(16,84,106,0.5)   0%, transparent 24%),
+                    radial-gradient(ellipse at 10% 76%, rgba(8,48,68,0.62)    0%, transparent 20%),
+                    radial-gradient(ellipse at 82% 72%, rgba(12,64,84,0.5)    0%, transparent 22%),
+                    radial-gradient(ellipse at 36% 44%, rgba(6,42,62,0.36)    0%, transparent 30%),
+                    radial-gradient(circle   at 28% 22%, #1e8898 0%, #0b3c4e 20%, #061d2c 50%, #030d18 80%, #010608 100%)
+                  `,
+                  boxShadow: `
+                    inset -62px -34px 150px rgba(0,0,0,0.98),
+                    inset  22px  14px  65px rgba(76,210,210,0.042),
+                    inset   4px   4px  20px rgba(255,255,255,0.015),
+                    0   0 110px rgba(14,116,144,0.6),
+                    0   0 220px rgba(14,116,144,0.25),
+                    0   0 360px rgba(14,116,144,0.09),
+                    0  50px 120px rgba(0,0,0,0.8)
+                  `,
+                  animation: 'globePulse 8s ease-in-out infinite',
+                }}
+              />
+
+              {/* Atmospheric limb — soft outer halo */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: -16,
+                  borderRadius: '50%',
+                  background:
+                    'radial-gradient(circle, transparent 58%, rgba(14,116,144,0.14) 78%, rgba(14,116,144,0.04) 100%)',
+                }}
+              />
+
+              {/* Orbit ring A — matches CW plane radius */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: 700,
+                  height: 700,
+                  marginTop: -350,
+                  marginLeft: -350,
+                  border: '1px solid rgba(100,220,210,0.1)',
+                  borderRadius: '50%',
+                }}
+              />
+
+              {/* Orbit ring B — matches CCW plane radius */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: 624,
+                  height: 624,
+                  marginTop: -312,
+                  marginLeft: -312,
+                  border: '1px dashed rgba(230,160,200,0.08)',
+                  borderRadius: '50%',
+                }}
+              />
+
+              {/* Plane 1: clockwise, outer orbit */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: 0,
+                  height: 0,
+                  animation: 'orbitCW 24s linear infinite',
+                }}
+              >
+                <div style={{ position: 'absolute', transform: 'translateX(342px) translateY(-7px) rotate(90deg)' }}>
+                  <PlaneIcon size={42} color="#E8D5B0" glow />
+                </div>
+              </div>
+
+              {/* Plane 2: counterclockwise, inner orbit, phase-shifted */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: 0,
+                  height: 0,
+                  animation: 'orbitCCW 16s linear -7s infinite',
+                }}
+              >
+                <div style={{ position: 'absolute', transform: 'translateX(304px) translateY(-6px) rotate(-90deg)' }}>
+                  <PlaneIcon size={36} color="#DDB8C8" glow />
+                </div>
+              </div>
+
             </div>
-          </div>
-        </div>
-
-        {/* ── Text content — z-index above globe, below planes ── */}
-        <div
-          className="relative max-w-5xl mx-auto px-6 text-center"
-          style={{ zIndex: 10, paddingTop: '6rem', paddingBottom: '6rem' }}
-        >
-          <span
-            className="inline-flex items-center gap-2 backdrop-blur-sm border px-5 py-2 rounded-full text-sm mb-8 tracking-wide"
-            style={{
-              background: 'rgba(220,145,175,0.09)',
-              borderColor: 'rgba(230,155,185,0.22)',
-              color: 'rgba(242,182,205,0.8)',
-            }}
-          >
-            Destinations worldwide
-          </span>
-
-          <h1
-            className="text-6xl sm:text-7xl md:text-8xl font-black leading-none mb-6 tracking-tight"
-            style={{ color: '#F5E6C8' }}
-          >
-            Plan your trip
-            <br />
-            around how you
-            <br />
-            <span
-              className="text-transparent bg-clip-text"
-              style={{
-                backgroundImage:
-                  'linear-gradient(135deg, #FF6B6B 0%, #FFD166 60%, #ffa07a 100%)',
-              }}
-            >
-              actually travel
-            </span>
-          </h1>
-
-          <p
-            className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto leading-relaxed font-light"
-            style={{ color: 'rgba(232,218,192,0.64)' }}
-          >
-            Tell us your travel style, pick a city, and get a personalised day-by-day
-            itinerary built around what you actually enjoy.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate('/plan')}
-              className="bg-coral text-white px-10 py-4 rounded-2xl text-lg font-bold hover:bg-coral-dark transition-all shadow-2xl shadow-coral/40 hover:-translate-y-1"
-            >
-              Plan a Trip →
-            </button>
-            <button
-              onClick={() => navigate('/onboarding')}
-              className="bg-white/10 backdrop-blur-sm text-white border border-white/25 px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-white/20 transition-all"
-            >
-              Set My Preferences
-            </button>
           </div>
         </div>
 
         {/* Scroll indicator */}
         <div
-          className="absolute bottom-6 flex flex-col items-center gap-1 animate-bounce"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-bounce"
           style={{ color: 'rgba(245,230,200,0.3)', zIndex: 10 }}
         >
           <span className="text-xs tracking-widest uppercase font-medium">Scroll</span>
@@ -383,11 +391,8 @@ export default function Landing() {
           </div>
 
           <div className="text-center mt-14">
-            <button
-              onClick={() => navigate('/plan')}
-              className="bg-coral text-white px-10 py-4 rounded-2xl text-lg font-bold hover:bg-coral-dark transition-all shadow-lg shadow-coral/25 hover:-translate-y-0.5"
-            >
-              Plan a Trip →
+            <button onClick={() => navigate('/plan')} className="btn-plan">
+              Plan a Trip <span className="btn-arrow">→</span>
             </button>
           </div>
         </div>

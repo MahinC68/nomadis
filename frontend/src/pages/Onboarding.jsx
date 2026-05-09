@@ -37,7 +37,7 @@ export default function Onboarding() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="flex-1 max-w-2xl mx-auto w-full px-6 py-16">
+      <div className="flex-1 max-w-2xl mx-auto w-full px-6 pb-16 pt-28">
         <div className="text-center mb-12">
           <span className="text-5xl block mb-4">🧭</span>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Tell us how you travel</h1>

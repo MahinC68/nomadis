@@ -120,7 +120,7 @@ export default function Itinerary() {
       <Navbar />
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 shadow-sm">
+      <div className="bg-white border-b border-gray-100 shadow-sm" style={{ paddingTop: 80 }}>
         <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>

@@ -51,7 +51,7 @@ export default function Trips() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="flex-1 max-w-6xl mx-auto w-full px-6 py-12">
+      <div className="flex-1 max-w-6xl mx-auto w-full px-6 pb-12 pt-28">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
