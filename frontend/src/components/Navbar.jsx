@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom'
 
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
-  { to: '/plan', label: 'Plan Trip' },
   { to: '/trips', label: 'My Trips' },
 ]
 

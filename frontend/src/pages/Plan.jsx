@@ -94,7 +94,7 @@ export default function Plan() {
         <div className="text-center mb-12">
           <span className="text-5xl block mb-4">🗺️</span>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Where are you headed?</h1>
-          <p className="text-gray-500">We'll find the best experiences for your travel style.</p>
+          <p className="text-gray-500">Matched to your travel style using your saved preferences.</p>
         </div>
 
         {!hasPrefs && (
