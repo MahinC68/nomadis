@@ -1,0 +1,5 @@
+# Install with the constraint file — see setup.sh for the exact pip command.
+# Direct `pip install -r requirements.txt` will NOT resolve Airflow deps correctly.
+apache-airflow==2.9.3
+psycopg2-binary
+python-dotenv
