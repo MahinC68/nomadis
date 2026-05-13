@@ -1,0 +1,12 @@
+nomadis:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      dbname: nomadis_db
+      user: postgres
+      password: "Brampton06!Postgres"
+      schema: public
+      threads: 4

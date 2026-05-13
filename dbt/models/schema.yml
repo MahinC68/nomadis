@@ -1,0 +1,75 @@
+version: 2
+
+sources:
+  - name: nomadis
+    database: nomadis_db
+    schema: public
+    description: Raw application tables written by the Nomadis FastAPI backend
+    tables:
+      - name: pois
+        description: Points of interest with travel-category feature scores
+      - name: trips
+        description: User trip plans with preference profiles, itinerary JSON, and match scores
+
+models:
+  - name: stg_pois
+    description: >
+      Cleaned and validated POIs. Filters out records where every feature score
+      is zero or null. Adds profile_strength as the average of all 6 scores.
+    columns:
+      - name: id
+        description: Primary key from the raw pois table
+      - name: name
+        description: Name of the point of interest
+      - name: city
+        description: City the POI is located in
+      - name: category
+        description: POI category (e.g. museum, park, restaurant)
+      - name: avg_cost
+        description: Average cost in USD
+      - name: duration_mins
+        description: Typical visit duration in minutes
+      - name: indoor_outdoor
+        description: Whether the activity is indoor, outdoor, or both
+      - name: adventure_score
+        description: Adventure dimension score (0–1)
+      - name: culture_score
+        description: Culture dimension score (0–1)
+      - name: relaxation_score
+        description: Relaxation dimension score (0–1)
+      - name: nightlife_score
+        description: Nightlife dimension score (0–1)
+      - name: nature_score
+        description: Nature dimension score (0–1)
+      - name: food_score
+        description: Food dimension score (0–1)
+      - name: profile_strength
+        description: Mean of all 6 feature scores; indicates how strongly a POI is characterised
+
+  - name: poi_mart
+    description: >
+      Analysis-ready POI table built on stg_pois. Adds dominant_category,
+      is_balanced flag, and value_score (cost efficiency).
+    columns:
+      - name: dominant_category
+        description: Travel dimension with the highest score; ties broken by column order (adventure first)
+      - name: is_balanced
+        description: True if the highest score is within 0.3 of the profile_strength average
+      - name: value_score
+        description: Cost per minute of activity (avg_cost / duration_mins)
+
+  - name: trip_summary
+    description: >
+      One row per destination aggregating all trips. Useful for understanding
+      which destinations are most popular and how well itineraries match travellers.
+    columns:
+      - name: destination
+        description: Trip destination city or region
+      - name: total_trips
+        description: Total number of trips planned to this destination
+      - name: avg_match_score
+        description: Average avg_match_score across all trips to this destination
+      - name: avg_trip_length
+        description: Average trip_length_days across all trips to this destination
+      - name: most_common_budget
+        description: Most frequently selected budget tier (budget, mid, or luxury)
